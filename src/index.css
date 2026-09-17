@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  body {
+    @apply font-sans bg-white text-slate-900 select-none;
+  }
+  
+  input, textarea, select, [contenteditable="true"], .select-text {
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+  }
+}
+
+@layer components {
+  .section-title {
+    @apply text-4xl font-bold mb-8 text-center tracking-tight;
+  }
+  
+  .card {
+    @apply bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden transition-all duration-300 hover:shadow-md;
+  }
+  
+  .btn-primary {
+    @apply px-6 py-3 bg-blue-600 text-white rounded-full font-medium hover:bg-blue-700 transition-colors inline-flex items-center gap-2;
+  }
+  
+  .btn-secondary {
+    @apply px-6 py-3 bg-white text-slate-900 border border-slate-200 rounded-full font-medium hover:bg-slate-50 transition-colors inline-flex items-center gap-2;
+  }
+}
+
+/* Custom animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Modal styles */
+.modal-overlay {
+  @apply fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4;
+}
+
+.modal-content {
+  @apply bg-white rounded-3xl shadow-2xl overflow-hidden relative max-w-full;
+}
+
+/* Progress bars */
+.progress-bar-container {
+  @apply h-2 bg-slate-100 rounded-full overflow-hidden;
+}
+
+.progress-bar-fill {
+  @apply h-full bg-blue-600 rounded-full transition-all duration-1000 ease-out;
+}
+
+/* Circular progress */
+.circular-progress {
+  @apply relative inline-flex items-center justify-center;
+}
+
+.circular-progress svg {
+  @apply transform -rotate-90;
+}
+
+.circular-progress circle {
+  @apply fill-none stroke-current;
+}
+
+.circular-progress .bg {
+  @apply text-slate-200;
+}
+
+.circular-progress .fg {
+  @apply text-blue-600 transition-all duration-1000 ease-out;
+}

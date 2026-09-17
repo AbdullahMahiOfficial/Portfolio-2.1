@@ -1,0 +1,138 @@
+{
+  "entities": {
+    "message": {
+      "title": "Message",
+      "description": "A contact message from a user.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the sender."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "The email address of the sender."
+        },
+        "subject": {
+          "type": "string",
+          "description": "The subject of the message."
+        },
+        "message": {
+          "type": "string",
+          "description": "The content of the message."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the message was sent."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["unread", "read", "replied"],
+          "description": "The status of the message."
+        }
+      },
+      "required": ["name", "email", "message", "createdAt"]
+    },
+    "profile": {
+      "title": "Profile",
+      "description": "User profile information for home/hero section.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "heroTitle": { "type": "string" },
+        "heroDescription": { "type": "string" },
+        "bio": { "type": "string" },
+        "photoUrl": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "certification": {
+      "title": "Certification",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "issuer": { "type": "string" },
+        "logo": { "type": "string" },
+        "photo": { "type": "string" },
+        "landscape": { "type": "boolean" },
+        "visible": { "type": "boolean" },
+        "order": { "type": "number" }
+      }
+    },
+    "skill": {
+      "title": "Skill",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "level": { "type": "number" },
+        "category": { "type": "string", "enum": ["cloud", "related"] },
+        "visible": { "type": "boolean" }
+      }
+    },
+    "language": {
+      "title": "Language",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "level": { "type": "number" },
+        "visible": { "type": "boolean" }
+      }
+    },
+    "experience": {
+      "title": "Experience",
+      "type": "object",
+      "properties": {
+        "company": { "type": "string" },
+        "role": { "type": "string" },
+        "period": { "type": "string" },
+        "description": { "type": "array", "items": { "type": "string" } },
+        "logo": { "type": "string" },
+        "visible": { "type": "boolean" },
+        "isPresent": { "type": "boolean" }
+      }
+    },
+    "project": {
+      "title": "Project",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "logo": { "type": "string" },
+        "visible": { "type": "boolean" }
+      }
+    }
+  },
+  "firestore": {
+    "/profile/{profileId}": {
+      "schema": "profile",
+      "description": "Profile information."
+    },
+    "/certifications/{certId}": {
+      "schema": "certification",
+      "description": "Collection of certifications."
+    },
+    "/skills/{skillId}": {
+      "schema": "skill",
+      "description": "Collection of technical skills."
+    },
+    "/languages/{langId}": {
+      "schema": "language",
+      "description": "Collection of language proficiencies."
+    },
+    "/experience/{expId}": {
+      "schema": "experience",
+      "description": "Collection of work experience items."
+    },
+    "/projects/{projId}": {
+      "schema": "project",
+      "description": "Collection of portfolio projects."
+    },
+    "/messages/{messageId}": {
+      "schema": "message",
+      "description": "Collection of contact messages."
+    }
+  }
+}
