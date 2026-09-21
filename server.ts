@@ -53,13 +53,11 @@ async function startServer() {
       // Generate random strictly 6-digit fallback serial starting in the 260001+ range
       const activeTicketRef = ticketRef || (Math.floor(260001 + Math.random() * 739999)).toString();
 
-      // 1. Send automatic reply to the sender using nodemailer with Office 365.
       let smtpHost = (process.env.SMTP_HOST || "smtp.office365.com").trim();
       let smtpPort = Number(process.env.SMTP_PORT) || 587;
       let smtpUser = (process.env.SMTP_USER || "no-reply@abdullahmahiofficial.com").trim();
       let rawSmtpPass = (process.env.SMTP_PASS || "bbsqsxbrtmxxbdcm").trim();
 
-      // Helper function to thoroughly strip surrounding quotes
       const stripSurroundingQuotes = (str: string): string => {
         let s = str.trim();
         while (
@@ -80,7 +78,7 @@ async function startServer() {
       const transporter = nodemailer.createTransport({
         host: smtpHost,
         port: smtpPort,
-        secure: false, // true for 465, false for 587 (STARTTLS)
+        secure: false,
         requireTLS: true,
         connectionTimeout: 10000,
         greetingTimeout: 10000,
@@ -103,12 +101,6 @@ async function startServer() {
       } catch (verifyError: any) {
         console.warn("SMTP Verification warning, continuing mail dispatch attempt anyway:", verifyError.message || verifyError);
       }
-
-      const timestampDhaka = new Date().toLocaleString("en-US", {
-        timeZone: "Asia/Dhaka",
-        dateStyle: "medium",
-        timeStyle: "medium"
-      }) + " (Dhaka Time)";
 
       const resolvedGoogleWebhook = (googleSheetWebhook || process.env.VITE_GOOGLE_SHEET_WEBHOOK || process.env.GOOGLE_SHEET_WEBHOOK || "").trim();
       const resolvedExcelWebhook = (excelWebhookUrl || process.env.VITE_EXCEL_WEBHOOK_URL || process.env.EXCEL_WEBHOOK_URL || "").trim();
@@ -137,9 +129,7 @@ async function startServer() {
 
           let webhookRes = await fetch(targetUrl, {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             redirect: "manual",
             signal: controller.signal,
             body: payload
@@ -157,9 +147,7 @@ async function startServer() {
               if (isValidHttpUrl(redirectUrl)) {
                 webhookRes = await fetch(redirectUrl, {
                   method: "POST",
-                  headers: {
-                    "Content-Type": "application/json"
-                  },
+                  headers: { "Content-Type": "application/json" },
                   redirect: "manual",
                   signal: controller.signal,
                   body: payload
@@ -167,7 +155,6 @@ async function startServer() {
               }
             }
           }
-
           clearTimeout(timeoutId);
         } catch (webhookErr: any) {
           clearTimeout(timeoutId);
@@ -175,27 +162,72 @@ async function startServer() {
         }
       };
 
+      // Plaintext body for sender's auto-reply
       const clientText = `Dear ${name},
 
-Thank you for initiating contact through my professional portfolio portal. 
 
-This automated communication serves to confirm that your transmission has been securely received, validated, and successfully routed to my primary operations queue.
+Thank you for contacting me through my professional portfolio.
 
-Best regards,
-Solution Architect & IT Infrastructure Practitioner
-hello@abdullahmahiofficial.com`;
+Your message has been successfully received, and I sincerely appreciate your interest in connecting. Whether you are reaching out regarding career opportunities, cloud and infrastructure projects, Microsoft technologies, DevOps initiatives, digital transformation, consulting services, partnerships, or professional collaboration, your inquiry is important to me.
 
+I personally review every message to ensure a thoughtful and meaningful response. I am currently evaluating your request and will typically respond within 24–48 business hours.
+
+I strongly believe that great opportunities are built through meaningful conversations, shared ideas, and trusted professional relationships. Whether you're exploring new technology initiatives, seeking technical expertise, discussing potential collaborations, or considering me for a role within your organization, I look forward to learning more about your objectives and finding ways to create value together.
+
+Thank you once again for your time, trust, and interest. I appreciate the opportunity to connect and look forward to our conversation.
+
+Sincerely,
+Solution Architect | Cloud & Infrastructure Engineer
+hello@abdullahmahiofficial.com
+
+WhatsApp: https://wa.me/AbdullahMahiOfficial
+Website: https://abdullahmahiofficial.com`;
+
+      // HTML body for sender's auto-reply with justify alignment and modern spacing
       const clientHtml = `
-        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 650px; margin: 0 auto; color: #1e293b; line-height: 1.6;">
-          <p style="margin-top: 0; font-size: 15px;">Dear <strong>${name}</strong>,</p>
-          <p style="font-size: 15px;">Thank you for initiating contact through my professional portfolio portal. Your transmission has been securely received.</p>
-          <div style="background-color: #f8fafc; border-left: 3px solid #0284c7; border-radius: 4px; padding: 12px 16px; margin: 20px 0;">
-            <p style="margin: 0; font-size: 11px; font-weight: bold; color: #64748b; text-transform: uppercase;">🔒 Operations Routing Secured</p>
-            <p style="margin: 4px 0 0 0; font-family: Consolas, monospace; font-size: 13px; color: #0284c7; font-weight: bold;">TICKET REF: ${activeTicketRef}</p>
-          </div>
-          <p style="font-size: 15px;">I will review your message and respond within 24 to 48 business hours.</p>
-          <p style="margin-top: 32px; margin-bottom: 0; font-size: 15px;">Best regards,</p>
-          <p style="margin: 0; font-size: 15px; font-weight: bold; color: #0f172a;">Solution Architect & IT Infrastructure Practitioner</p>
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 650px; margin: 0 auto; color: #1e293b; line-height: 1.7;">
+          <p style="margin-top: 0; font-size: 15px; text-align: left;">Dear <strong>${name}</strong>,</p>
+          
+          <p style="font-size: 15px; text-align: justify; text-justify: inter-word; margin-bottom: 16px;">Thank you for contacting me through my professional portfolio.</p>
+          
+          <p style="font-size: 15px; text-align: justify; text-justify: inter-word; margin-bottom: 16px;">Your message has been successfully received, and I sincerely appreciate your interest in connecting. Whether you are reaching out regarding career opportunities, cloud and infrastructure projects, Microsoft technologies, DevOps initiatives, digital transformation, consulting services, partnerships, or professional collaboration, your inquiry is important to me.</p>
+          
+          <p style="font-size: 15px; text-align: justify; text-justify: inter-word; margin-bottom: 16px;">I personally review every message to ensure a thoughtful and meaningful response. I am currently evaluating your request and will typically respond within 24–48 business hours.</p>
+          
+          <p style="font-size: 15px; text-align: justify; text-justify: inter-word; margin-bottom: 16px;">I strongly believe that great opportunities are built through meaningful conversations, shared ideas, and trusted professional relationships. Whether you're exploring new technology initiatives, seeking technical expertise, discussing potential collaborations, or considering me for a role within your organization, I look forward to learning more about your objectives and finding ways to create value together.</p>
+          
+          <p style="font-size: 15px; text-align: justify; text-justify: inter-word; margin-bottom: 24px;">Thank you once again for your time, trust, and interest. I appreciate the opportunity to connect and look forward to our conversation.</p>
+          
+          <p style="margin-top: 32px; margin-bottom: 0; font-size: 15px; text-align: left;">Best regards,</p>
+          <p style="margin: 0; font-size: 15px; font-weight: bold; color: #0f172a; text-align: left;">Solution Architect | Cloud & Infrastructure Engineer</p>
+          <p style="margin: 0; font-size: 15px; margin-bottom: 20px; text-align: left;"><a href="mailto:hello@abdullahmahiofficial.com" style="color: #0284c7; text-decoration: none; font-weight: 500;">hello@abdullahmahiofficial.com</a></p>
+          
+          <table cellspacing="0" cellpadding="0" border="0" style="margin-top: 8px;">
+            <tr>
+              <td style="padding-right: 12px; vertical-align: middle;">
+                <a href="https://wa.me/AbdullahMahiOfficial" target="_blank" style="text-decoration: none; display: inline-block;">
+                  <table cellspacing="0" cellpadding="0" border="0" style="background-color: #25D366; border-radius: 4px;">
+                    <tr>
+                      <td style="padding: 9px 18px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 13px; font-weight: bold; color: #ffffff; text-align: center; vertical-align: middle; border-radius: 4px;">
+                        WhatsApp
+                      </td>
+                    </tr>
+                  </table>
+                </a>
+              </td>
+              <td style="vertical-align: middle;">
+                <a href="https://abdullahmahiofficial.com" target="_blank" style="text-decoration: none; display: inline-block;">
+                  <table cellspacing="0" cellpadding="0" border="0" style="background-color: #0284c7; border-radius: 4px;">
+                    <tr>
+                      <td style="padding: 9px 18px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 13px; font-weight: bold; color: #ffffff; text-align: center; vertical-align: middle; border-radius: 4px;">
+                        Website
+                      </td>
+                    </tr>
+                  </table>
+                </a>
+              </td>
+            </tr>
+          </table>
         </div>
       `;
 
@@ -248,7 +280,6 @@ Message: "${message}"`;
     }
   });
 
-  // Production vs Development static asset middleware handling
   const isProd = process.env.NODE_ENV === "production";
   
   if (!isProd) {
