@@ -19,7 +19,7 @@ export default defineConfig(({mode}) => {
       // HMR is disabled in AI Studio environment
       hmr: false,
       allowedHosts: [
-        'abdullahmahibd-cshthdhenewe6eeg7.southeastasia-01.azurewebsites.net'
+        'portfolio-abdwewbaa5gmfchh.southeastasia-01.azurewebsites.net'
       ]
     },
   };
